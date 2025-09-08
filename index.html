@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebCraft 2k25</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Universal styles */
+*, *::before, *::after {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0f1c;color:white;position:relative;}
+#logo{position:absolute;top:10px;left:10px;width:120px;z-index:20;transition:opacity 0.5s ease;}
+#eventLogo{position:absolute;top:10px;right:10px;width:120px;z-index:20;transition:opacity 0.5s ease;}
+.screen{position:absolute;top:0;left:0;width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;background:#0a0f1c;transition:opacity 0.6s ease,visibility 0.6s ease;opacity:0;visibility:hidden;z-index:1;}
+.screen.active{opacity:1;visibility:visible;z-index:10;}
+.screen h1,h2{text-align:center;margin-bottom:20px;z-index:2;}
+button{padding:12px 30px;font-size:1.2rem;border:none;border-radius:30px;background:linear-gradient(135deg,#00bfff,#8a2be2);color:white;cursor:pointer;transition:transform 0.3s ease,box-shadow 0.3s ease;z-index:2;margin-top:20px;outline:none;}
+button:hover{transform:scale(1.05);box-shadow:0 0 15px rgba(0,191,255,0.6);}
+#videoScreen video{width:100vw;height:100vh;object-fit:cover;z-index:1;}
+#instructionsScreen,#projectScreen,#detailsScreen{background:rgba(0,0,0,0.85);padding:50px;z-index:10;justify-content:flex-start;overflow-y:auto;}
+#instructionsScreen ul{margin-top:20px;margin-left:20px;line-height:1.8;font-size:1.1rem;max-width:800px;text-align:left;list-style:disc inside;}
+#instructionsScreen ul li{margin-bottom:10px;}
+#timer{font-size:4rem;border:3px solid rgba(255,255,255,0.3);padding:15px 30px;border-radius:15px;margin-bottom:30px;text-align:center;background:rgba(0,0,0,0.3);box-shadow:0 0 20px rgba(0,191,255,0.4);}
+#projects{display:flex;justify-content:center;flex-wrap:wrap;gap:30px;width:100%;max-width:1200px;margin-top:30px;}
+.project{background:rgba(255,255,255,0.08);padding:30px;border-radius:20px;width:280px;min-height:180px;text-align:center;position:relative;cursor:pointer;backdrop-filter:blur(5px);transition:transform 0.4s ease,background 0.4s ease,box-shadow 0.4s ease;border:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;justify-content:center;align-items:center;}
+.project:hover{transform:translateY(-10px) scale(1.02);background:rgba(255,255,255,0.15);box-shadow:0 15px 30px rgba(0,191,255,0.3);}
+.project h3{filter:blur(8px);transition:filter 0.6s ease;margin-bottom:20px;font-size:1.5rem;color:#00bfff;}
+.project.revealed h3{filter:blur(0);}
+.detailsBtn{display:block;opacity:0;padding:10px 20px;margin-top:15px;border-radius:25px;background:linear-gradient(135deg,#00bfff,#8a2be2);color:white;cursor:pointer;transition:transform 0.3s ease,box-shadow 0.3s ease,opacity 0.5s ease;}
+.project.revealed .detailsBtn{opacity:1;}
+.detailsBtn:hover{transform:scale(1.1);box-shadow:0 0 18px rgba(0,191,255,0.8);}
+#detailsScreen{max-width:900px;margin:0 auto;padding-top:80px;text-align:left;}
+#detailsScreen h2{color:#00bfff;margin-bottom:25px;text-shadow:0 0 20px rgba(0,191,255,0.9);font-size:2.2rem;}
+#detailsScreen p,#detailsScreen ul{margin:15px 0;color:#e0e0e0;line-height:1.7;font-size:1.1rem;}
+#detailsScreen ul{margin-left:20px;list-style:disc inside;}
+#detailsScreen button{margin-top:40px;}
+
+/* Particles canvas */
+.particlesCanvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+/* Responsive */
+@media(max-width:768px){#logo,#eventLogo{width:80px;}.screen h1{font-size:1.8rem;}.screen h2{font-size:1.5rem;}button{padding:10px 25px;font-size:1rem;}#timer{font-size:3rem;padding:10px 20px;}#instructionsScreen,#projectScreen,#detailsScreen{padding:20px;}.project{width:90%;margin-bottom:15px;}}
+</style>
+</head>
+<body>
+
+<img id="logo" src="aditya-logo.webp" alt="College Logo">
+<img id="eventLogo" src="Event logo.jpg" alt="Event Logo">
+
+<!-- Welcome Screen -->
+<div id="welcomeScreen" class="screen active">
+  <h1>Welcome to Aditya Degree Co-ed Campus, Gajuwaka</h1>
+  <h2>Welcome to VisionX Event - Department of AI</h2>
+  <button id="startBtn">Start</button>
+  <canvas class="particlesCanvas" id="welcomeParticles"></canvas>
+</div>
+
+<!-- Video Screen -->
+<div id="videoScreen" class="screen">
+  <video id="eventVideo" src="event-video.mp4" muted playsinline></video>
+</div>
+
+<!-- Instructions Screen -->
+<div id="instructionsScreen" class="screen">
+  <h2>Competition Instructions</h2>
+  <ul>
+    <li>🎯 Winners will be decided based on project creativity, quality, and showcase.</li>
+    <li>🕒 2-hour time limit for each project.</li>
+    <li>📝 Use of AI tools, frameworks, and resources to enhance your work.</li>
+    <li>❌ Use of AI-powered development tools for code generation is strictly prohibited.</li>
+    <li>⚡ Choose wisely and manage your time efficiently!</li>
+    <li>📋 You must explain your project development process during submission.</li>
+  </ul>
+  <button id="proceedBtn">Proceed to Projects</button>
+  <canvas class="particlesCanvas" id="instructionsParticles"></canvas>
+</div>
+
+<!-- Project Screen -->
+<div id="projectScreen" class="screen">
+  <div id="timer">00:00:00</div>
+  <button id="startTimerBtn">Start Timer</button>
+  <div id="projects">
+    <div class="project" data-project-id="profilefit">
+      <h3>ProfileFit</h3>
+      <button class="detailsBtn">Details</button>
+    </div>
+    <div class="project" data-project-id="chatbot">
+      <h3>Chatbot Creation</h3>
+      <button class="detailsBtn">Details</button>
+    </div>
+    <div class="project" data-project-id="avatar">
+      <h3>Avatar Builder</h3>
+      <button class="detailsBtn">Details</button>
+    </div>
+  </div>
+  <canvas class="particlesCanvas" id="projectParticles"></canvas>
+</div>
+
+<!-- Details Screen -->
+<div id="detailsScreen" class="screen">
+  <h2 id="detailsTitle"></h2>
+  <div id="detailsContent"></div>
+  <button id="backBtn">Back</button>
+</div>
+
+<script>
+// Elements
+const welcomeScreen = document.getElementById('welcomeScreen');
+const startBtn = document.getElementById('startBtn');
+const videoScreen = document.getElementById('videoScreen');
+const eventVideo = document.getElementById('eventVideo');
+const instructionsScreen = document.getElementById('instructionsScreen');
+const proceedBtn = document.getElementById('proceedBtn');
+const projectScreen = document.getElementById('projectScreen');
+const detailsScreen = document.getElementById('detailsScreen');
+const detailsTitle = document.getElementById('detailsTitle');
+const detailsContent = document.getElementById('detailsContent');
+const logo = document.getElementById('logo');
+const eventLogo = document.getElementById('eventLogo');
+const startTimerButton = document.getElementById('startTimerBtn');
+const backButton = document.getElementById('backBtn');
+const projectsContainer = document.getElementById('projects');
+
+// Project details
+const projectDetails = {
+  profilefit: {
+    title:'ProfileFit - Project Details',
+    content:`<p><strong>Objective:</strong> Build a web app evaluating resume suitability for a job description.</p>
+    <ul>
+      <li>Analyze resume vs. job description.</li>
+      <li>Provide a suitability score or recommendation.</li>
+      <li>Highlight strengths and weaknesses.</li>
+      <li>Professional & attractive UI required.</li>
+      <li>Explain development process during submission.</li>
+    </ul>`
+  },
+  chatbot: {
+    title:'Chatbot Creation - Project Details',
+    content:`<p><strong>Objective:</strong> Build an interactive web chatbot responding to user queries.</p>
+    <ul>
+      <li>Handle various queries (FAQ, commands).</li>
+      <li>Multi-turn conversation optional.</li>
+      <li>User-friendly & intuitive UI.</li>
+      <li>Explain workflow & logic to organizers.</li>
+    </ul>`
+  },
+  avatar: {
+    title:'Avatar Builder - Project Details',
+    content:`<p><strong>Objective:</strong> Create a web application to customize avatars.</p>
+    <ul>
+      <li>Customize facial features, hair, eyes, clothing, etc.</li>
+      <li>Preview avatar changes in real-time.</li>
+      <li>Attractive & intuitive UI required.</li>
+      <li>Explain development process during submission.</li>
+    </ul>`
+  }
+};
+
+// --- Event Listeners ---
+startBtn.addEventListener('click',()=>{
+  welcomeScreen.classList.remove('active');
+  logo.style.opacity='0';
+  eventLogo.style.opacity='0';
+  videoScreen.classList.add('active');
+  eventVideo.currentTime=0;
+  eventVideo.play();
+});
+
+eventVideo.addEventListener('ended',()=>{
+  videoScreen.classList.remove('active');
+  instructionsScreen.classList.add('active');
+  startParticles('instructionsParticles',80);
+});
+
+proceedBtn.addEventListener('click',()=>{
+  instructionsScreen.classList.remove('active');
+  projectScreen.classList.add('active');
+  document.getElementById('timer').textContent="00:00:00";
+  startParticles('projectParticles',60);
+});
+
+// Reveal project title on click
+projectsContainer.addEventListener('click',(event)=>{
+  const projectElement=event.target.closest('.project');
+  if(projectElement && !projectElement.classList.contains('revealed')){
+    projectElement.classList.add('revealed');
+  }
+});
+
+// Details button click
+projectsContainer.addEventListener('click',(event)=>{
+  if(event.target.classList.contains('detailsBtn')){
+    event.stopPropagation();
+    const projectId=event.target.closest('.project').dataset.projectId;
+    showDetails(projectId);
+  }
+});
+
+backButton.addEventListener('click',()=>{closeDetails();});
+
+// Timer
+startTimerButton.addEventListener('click',()=>{startTimer(2*60*60);startTimerButton.style.display='none';});
+
+function showDetails(projectId){
+  projectScreen.classList.remove('active');
+  detailsScreen.classList.add('active');
+  const data=projectDetails[projectId];
+  if(data){
+    detailsTitle.textContent=data.title;
+    detailsContent.innerHTML=data.content;
+  }
+}
+
+function closeDetails(){
+  detailsScreen.classList.remove('active');
+  projectScreen.classList.add('active');
+}
+
+// Timer function
+let timerInterval;
+function startTimer(seconds){
+  clearInterval(timerInterval);
+  let remaining=seconds;
+  const display=document.getElementById('timer');
+  timerInterval=setInterval(()=>{
+    if(remaining<0){clearInterval(timerInterval);display.textContent="Time's Up!";return;}
+    const h=Math.floor(remaining/3600).toString().padStart(2,'0');
+    const m=Math.floor((remaining%3600)/60).toString().padStart(2,'0');
+    const s=(remaining%60).toString().padStart(2,'0');
+    display.textContent=`${h}:${m}:${s}`;
+    remaining--;
+  },1000);
+}
+
+// --- Particle Effects ---
+function startParticles(canvasId,count){
+  const canvas=document.getElementById(canvasId);
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  let particles=[];
+  for(let i=0;i<count;i++){
+    particles.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      r:Math.random()*4+2,
+      dx:(Math.random()-0.5)*0.5,
+      dy:(Math.random()-0.5)*0.5,
+      opacity:Math.random()
+    });
+  }
+  function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,191,255,${p.opacity})`;
+      ctx.fill();
+      p.x+=p.dx;
+      p.y+=p.dy;
+      if(p.x<0||p.x>canvas.width)p.dx*=-1;
+      if(p.y<0||p.y>canvas.height)p.dy*=-1;
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// Welcome particles
+startParticles('welcomeParticles',100);
+
+</script>
+</body>
+</html>
